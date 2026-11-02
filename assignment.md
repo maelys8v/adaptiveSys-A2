@@ -35,7 +35,7 @@ using the provided data set.
 
  
 
-## 3. Top-N recommendations: 
+## 3. Top-N recommendations: (AJOUTER LES RAPPORT REDIGE)
 calculate the precision, recall, and F1 with different values for N (10..100) 
 using user-based K-NN (with the best Ks)  and SVD. 
 To do this, you must suppose that the relevant recommendations for a specific user 
