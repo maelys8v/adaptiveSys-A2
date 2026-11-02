@@ -18,18 +18,18 @@ The assignment consists of the following tasks:
 Given this data set (Movielens 100k) 
 and the algorithm of K-NN explained in class for user-based CF:
 
-### a) 
+### a)  (FAIT)
 Find out the value for K<=100 that minimizes the MAE with 25% of missing ratings. 
 Check all the K values with an increase of +1 up to 100. 
 Make sure that you use the sufficient decimal precision to compare the values, 
 because the differences between the MAEs will be very small.
 
-### b) 
+### b) (FAIT)
 Sparsity Problem: 
 find out the value for K under the same conditions above 
 that minimizes the MAE with 75% of missing ratings.
 
-## 2. Mitigation of sparsity problem: 
+## 2. Mitigation of sparsity problem: (FAIT)
 show how SVD (Funk variant) can provide a better MAE than user-based K-NN 
 using the provided data set. 
 
