@@ -14,7 +14,7 @@ todo_1a = False
 todo_1b = False
 todo_2 = False
 todo_3 = False
-todo_4 = False
+todo_4 = True
 # ---------------------------------------------------------------
 def compute_MAE_for_100k_knn(trainset, testset):
     MAE = []
@@ -342,4 +342,81 @@ if todo_3:
         "Top-N recommendations, 75% missing ratings",
         "topn_75.png"
     )
+
+# PART 4 -----------------------------------------------------------------
+# Only for HCID students.
+# Repeat task 3 for N=10 and 25% of missing ratings, but using MovieLens 1M.
+# Then justify the differences in precision / recall / F1 with ML-100k.
+#
+# The 1M dataset is much larger and much denser than 100k:
+#   - ~1,000,000 ratings by ~6,000 users on ~3,700 movies
+#   - each user has rated many more movies, so there is more information
+#     for both K-NN and SVD to learn from.
+
+if todo_4:
+    # ratings.dat is "::"-separated, with no header:
+    #   user id :: item id :: rating :: timestamp
+    df_1m = pd.read_csv(
+        "ml-1m/ratings.dat",
+        sep="::",
+        engine="python",       # needed for a multi-character separator
+        header=None,
+        names=["user_id", "item_id", "rating", "timestamp"]
+    )
+
+    reader_1m = Reader(rating_scale=(1, 5))
+    data_1m = Dataset.load_from_df(
+        df_1m[["user_id", "item_id", "rating"]],
+        reader_1m
+    )
+
+    # Same 25%-missing split as before, with the required seed.
+    trainset4, testset4 = train_test_split(
+        data_1m,
+        test_size=0.25,
+        random_state=22
+    )
+
+    # User-based K-NN with the best K found for the 25% case in task 1a (K=75).
+    knn_1m = KNNWithMeans(
+        k=75,
+        sim_options={"name": "pearson", "user_based": True}
+    )
+
+    # SVD with the required seed.
+    svd_1m = SVD(random_state=3)
+
+    # Task 4 only asks for N=10, so we evaluate a single N value.
+    results_knn_1m = evaluate_top_n(
+        trainset4,
+        testset4,
+        knn_1m,
+        "ML-1M - KNN (K=75), 25% missing",
+        n_values=[10]
+    )
+
+    results_svd_1m = evaluate_top_n(
+        trainset4,
+        testset4,
+        svd_1m,
+        "ML-1M - SVD, 25% missing",
+        n_values=[10]
+    )
+
+    # Values obtained on ML-100k in task 3 (N=10, 25% missing), used only
+    # to compare the two datasets.
+    ML100K_KNN_10 = (0.692234, 0.665652, 0.678683)
+    ML100K_SVD_10 = (0.690325, 0.664230, 0.677026)
+
+    # Small comparison table: same N, same % missing, different dataset.
+    print("\n=== Comparison at N=10, 25% missing ===")
+    print(f"{'Model / dataset':<20}{'Precision':>10}{'Recall':>10}{'F1':>10}")
+    print("-" * 50)
+    for name, (pre, rec, f1) in [
+        ("ML-100k KNN", ML100K_KNN_10),
+        ("ML-1M KNN", results_knn_1m[10]),
+        ("ML-100k SVD", ML100K_SVD_10),
+        ("ML-1M SVD", results_svd_1m[10]),
+    ]:
+        print(f"{name:<20}{pre:>10.6f}{rec:>10.6f}{f1:>10.6f}")
 
